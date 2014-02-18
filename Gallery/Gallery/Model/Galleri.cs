@@ -8,13 +8,13 @@ using System.Drawing;
 
 namespace Gallery.Model
 {
-    public class Gallery
+    public class Galleri
     {
         private static readonly Regex ApprovedExtensions;
         private static string PhysicalUploadedImagesPath;
         private static readonly Regex SantizePath;
 
-        static Gallery()
+        static Galleri()
         {
             ApprovedExtensions = new Regex("^.*.(gif|jpg|png)$", RegexOptions.IgnoreCase);
             PhysicalUploadedImagesPath = Path.Combine(AppDomain.CurrentDomain.GetData("APPBASE").ToString(), "Content", "Images");
@@ -23,23 +23,19 @@ namespace Gallery.Model
             SantizePath = new Regex(string.Format("[{0}]", Regex.Escape(invalidChars)));
         }
 
-        public IEnumerable<string> GetImagesNames()
+        public IEnumerable<Thumbnail> GetImagesNames()
         {
-            var dirInf = new DirectoryInfo(PhysicalUploadedImagesPath);
-            var images = dirInf.GetFiles();
+            var dirInf = new DirectoryInfo(Path.Combine(PhysicalUploadedImagesPath, "Thumbnails"));
 
-            List<string> imageNameList = new List<string>();
+            return (from fi in dirInf.GetFiles()
+                    where ApprovedExtensions.IsMatch(fi.Name)
+                    select new Thumbnail
+                    {
+                        Name = fi.Name,
+                        ThumbNavUrl = Path.Combine("/?img=", fi.Name),
+                        ThumbNailUrl = Path.Combine("Content/Images/Thumbnails/", fi.Name)
 
-            foreach (var image in images)
-            {
-                if (ApprovedExtensions.IsMatch(image.ToString()))
-                {
-                    imageNameList.Add(image.ToString());
-                }
-            }
-
-            imageNameList.Sort();
-            return imageNameList;
+                    }).OrderBy(fi => fi.Name).ToList();
         }
 
         public bool ImageExists(string name)
@@ -63,7 +59,7 @@ namespace Gallery.Model
             var image = System.Drawing.Image.FromStream(stream);
             fileName = SantizePath.Replace(fileName, "");
 
-            if (IsValidImage(image))
+            if (!IsValidImage(image))
             {
                 throw new ArgumentException();
             }

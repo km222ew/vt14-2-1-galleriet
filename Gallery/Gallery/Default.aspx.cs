@@ -9,7 +9,7 @@ using Gallery.Model;
 namespace Gallery
 {
     public partial class Default : System.Web.UI.Page
-    {
+    { 
         private Galleri _gallery;
 
         private Galleri Gallery
@@ -35,6 +35,18 @@ namespace Gallery
             {
                 successPanel.Visible = true;
             }
+
+            //foreach (Control Control in this.Form.Controls)
+            //{
+            //    if ((Control) is HyperLink)
+            //    {
+            //        var hyperlink = Control as HyperLink;
+            //        if (hyperlink.NavigateUrl == fileName)
+            //        {
+            //            hyperlink.CssClass = "active";
+            //        }
+            //    }
+            //}
         }
 
         public IEnumerable<Thumbnail> Repeater_GetData()
@@ -63,13 +75,11 @@ namespace Gallery
                 {
                     try
                     {
-                        Gallery.SaveImage(FileUpload.FileContent, FileUpload.FileName);
-                        Response.Redirect(String.Format("?img={0}{1}", FileUpload.FileName, "&upload=success"), false);
+                        var fileName = Gallery.SaveImage(FileUpload.FileContent, FileUpload.FileName);
+                        Response.Redirect(String.Format("?img={0}{1}", fileName, "&upload=success"), false);
                     }
                     catch (Exception)
                     {
-                        //Response.Redirect(String.Format("?img={0}{1}", FileUpload.FileName, "&upload=failed"), false);
-
                         CustomValidator cv = new CustomValidator();
 
                         cv.IsValid = false;
@@ -77,7 +87,6 @@ namespace Gallery
                         cv.ErrorMessage = "Ett fel inträffade då bilden skulle överföras.";
 
                         this.Page.Validators.Add(cv);
-
                     }
                 }
             }   
@@ -87,7 +96,6 @@ namespace Gallery
         {
             var fileName = Request.QueryString["img"];
             Response.Redirect(String.Format("?img={0}", fileName));
-        }
-        
+        }               
     }
 }

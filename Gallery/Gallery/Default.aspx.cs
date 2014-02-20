@@ -24,6 +24,7 @@ namespace Gallery
         {
             var fileName = Request.QueryString["img"];
 
+            //Om det finns en bild i querystring så sätts den som stor bild
             if (fileName != null)
             {
                 Gallery.ImageExists(fileName);
@@ -31,6 +32,7 @@ namespace Gallery
                 FullImage.ImageUrl = "~/Content/Images/" + fileName;
             }
 
+            //Om "success" finns i querystring så visas rätt-meddelande
             if (Request.QueryString["upload"] == "success")
             {
                 successPanel.Visible = true;
@@ -54,6 +56,7 @@ namespace Gallery
             return Gallery.GetImagesNames();
         }
 
+        //Sätter en border runt en tumnagel när den binds
         protected void Repeater_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             var fileName = Request.QueryString["img"];
